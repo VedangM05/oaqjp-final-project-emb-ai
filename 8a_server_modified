@@ -20,8 +20,7 @@ def emotion_detect_route():
 
     try:
         result = emotion_detector(text_to_analyze)
-    except Exception as e: # pylint: disable=broad-except
-        print(f"Error occurred: {e}")
+    except Exception: # pylint: disable=broad-except
         return "Internal Server Error! Please try again later.", 500
 
     if result is None or result['dominant_emotion'] is None:

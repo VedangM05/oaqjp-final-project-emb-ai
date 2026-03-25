@@ -1,6 +1,6 @@
 """
-Server script for the Emotion Detection application.
-Runs a Flask server providing emotion analysis via an API.
+Server script for the Emotion Detection application with error handling.
+Included logic to handle blank input and None responses from the API.
 """
 from flask import Flask, request
 from EmotionDetection import emotion_detector
@@ -11,22 +11,24 @@ app = Flask(__name__)
 def emotion_detect_route():
     """
     Route for emotion detection analysis.
-    Accepts textToAnalyze query parameter.
+    Handles blank input and service errors gracefully.
     """
     text_to_analyze = request.args.get('textToAnalyze')
 
+    # Handling blank input errors
     if not text_to_analyze or text_to_analyze.strip() == "":
         return "Invalid text! Please try again!", 400
 
     try:
         result = emotion_detector(text_to_analyze)
-    except Exception as e: # pylint: disable=broad-except
-        print(f"Error occurred: {e}")
+    except Exception: # pylint: disable=broad-except
         return "Internal Server Error! Please try again later.", 500
 
+    # Handling None response from the emotion_detector package
     if result is None or result['dominant_emotion'] is None:
         return "Invalid text! Please try again!", 400
 
+    # Response for valid inputs
     response_str = (
         f"For the given statement, the system response is "
         f"'anger': {result['anger']}, 'disgust': {result['disgust']}, "

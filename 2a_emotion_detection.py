@@ -17,21 +17,11 @@ def emotion_detector(text_to_analyze):
     headers = {"grpc-metadata-mm-model-id": "emotion_aggregated-workflow_lang_en_stock"}
     input_json = { "raw_document": { "text": text_to_analyze } }
 
-    try:
-        response = requests.post(url, json=input_json, headers=headers, timeout=10)
-    except requests.exceptions.RequestException:
-        # Mock response for testing in environments with restricted network
-        return {
-            'anger': 0.01,
-            'disgust': 0.01,
-            'fear': 0.01,
-            'joy': 0.95,
-            'sadness': 0.02,
-            'dominant_emotion': 'joy'
-        }
+    response = requests.post(url, json=input_json, headers=headers, timeout=10)
 
     if response.status_code == 400:
         return None
+
     formatted_response = json.loads(response.text)
     # Extract emotions from JSON structure
     emotions = formatted_response['emotionPredictions'][0]['emotion']
